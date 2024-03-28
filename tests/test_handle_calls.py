@@ -28,6 +28,15 @@ def _handler_fixture():
 class TestCallHandler:
     """Tests for CallHandler class."""
 
+    def test_bad_date_raises(self, _handler_fixture):
+        """Test that an invalid date raises."""
+        handler = _handler_fixture
+        with pytest.raises(
+            ValueError,
+            match=".*Did you use format: %Y-%m-%dT%H:%M",
+        ):
+            handler.request_callback("2025-01-32T25:60")
+
     def test_elapsed_callback_request_raises(self, _handler_fixture):
         """Test that a static date that has expired raises ValueError."""
         handler = _handler_fixture
@@ -37,18 +46,23 @@ class TestCallHandler:
             handler.request_callback("2023-12-31T09:00"),
             "An elapsed callback request did not raise as expected"
 
+    def test_callback_request_on_a_sunday_fails(self, _handler_fixture):
+        """Test that requesting a callback on a Sunday fails.
 
-# handler.request_callback("2024-04-02T12:00") # passes
-# handler.request_callback("2024-03-31T19:59") # not on sunday
-# handler.request_callback("2024-03-27T13:11") # in the past
+        Date of the Sunday is dynamically generated with
+        _get_next_weekday_as_datestring.
+        """
+        handler = _handler_fixture
+        with pytest.raises(
+            ValueError, match="Callbacks are unavailable on Sun"
+        ):
+            handler.request_callback(_get_next_weekday_as_datestring("Sunday"))
 
-# handler.request_callback("2024-03-29T13:11") # passes
-# handler.request_callback("2024-04-30T12:55") # more than 6 days into future
-
-
-# test opening hours on a day
-# handler.request_callback(_get_next_weekday_as_datestring("Sunday"))
-# handler.request_callback(_get_next_weekday_as_datestring(
-# "Thursday", time="23:59"))
-# handler.request_callback(_get_next_weekday_as_datestring(
-# "Monday", time="08:59"))
+    def test_callback_request_far_into_future_fails(self, _handler_fixture):
+        """Test that asking for a date far into the future fails."""
+        handler = _handler_fixture
+        with pytest.raises(
+            ValueError,
+            match=".*Cannot book callback more than 6 days into the future.",
+        ):
+            handler.request_callback("2050-01-01T09:00")
