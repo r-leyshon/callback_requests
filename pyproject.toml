@@ -1,0 +1,19 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+[project]
+name = "callbacks"
+version = "0.0.1"
+requires-python = ">=3.9"
+[tool.hatch.build.targets.wheel]
+      packages = ["src/callbacks"]
+
+# `pytest` configurations
+[tool.pytest.ini_options]
+testpaths = [
+    "./tests"
+]
+[tool.pytest.addopts]
+ignore = [
+    "callbacks-env/"
+]
