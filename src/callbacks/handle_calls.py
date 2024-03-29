@@ -245,3 +245,11 @@ class CallHandler:
         self._is_during_work_hours(standard_date)
         print(f"Your appointment is booked for {datestring}")
         return standard_date
+
+
+if __name__ == "__main__":
+    t = dt.datetime.now() + dt.timedelta(hours=2.016)
+    t = t.isoformat().split(":")
+    t = t[0] + ":" + t[1]
+
+    CallHandler().request_callback(t)
