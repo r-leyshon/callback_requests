@@ -197,7 +197,7 @@ class CallHandler:
             raise ValueError(f"Callbacks are unavailable on {requested_day}")
         else:
             if (requested_time < requested_day_hours[0]) or (
-                requested_time > requested_day_hours[-1]
+                requested_time >= requested_day_hours[-1]
             ):
                 raise ValueError(
                     f"Office hours on {requested_day} : {requested_day_hours}"
